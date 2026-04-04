@@ -1882,6 +1882,11 @@ async function seed() {
   console.log(`\n✅ Seed complete! ${ALL_LESSONS.length} lessons across 6 languages.`)
 }
 
-seed()
-  .catch((e) => { console.error(e); process.exit(1) })
-  .finally(() => prisma.$disconnect())
+export { seed }
+
+// Allow running directly: node src/seed.js
+if (process.argv[1].endsWith('seed.js')) {
+  seed()
+    .catch((e) => { console.error(e); process.exit(1) })
+    .finally(() => prisma.$disconnect())
+}

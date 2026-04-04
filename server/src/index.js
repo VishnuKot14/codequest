@@ -22,6 +22,8 @@ import duelRoutes from './routes/duels.js'
 import shopRoutes from './routes/shop.js'
 import guildRoutes from './routes/guilds.js'
 import { attachDuelServer } from './ws/duelServer.js'
+import { seed } from './seed.js'
+import { PrismaClient } from '@prisma/client'
 
 const app = express()
 // We create an explicit HTTP server so we can attach both Express AND WebSocket to the same port.
@@ -80,8 +82,20 @@ app.use((err, _req, res, _next) => {
 // WebSocket connections arrive at ws://localhost:5000/ws/duel
 attachDuelServer(httpServer)
 
-// Use httpServer.listen (not app.listen) so WebSocket connections are accepted too
-httpServer.listen(PORT, () => {
-  console.log(`🗡  CodeQuest server running on http://localhost:${PORT}`)
-  console.log(`⚔  Duel WebSocket ready at ws://localhost:${PORT}/ws/duel`)
-})
+// Auto-seed the database on first run if no lessons exist yet
+const prisma = new PrismaClient()
+async function startServer() {
+  const lessonCount = await prisma.lesson.count()
+  if (lessonCount === 0) {
+    console.log('📦 No lessons found — running seed...')
+    await seed()
+  }
+  await prisma.$disconnect()
+
+  httpServer.listen(PORT, () => {
+    console.log(`🗡  CodeQuest server running on http://localhost:${PORT}`)
+    console.log(`⚔  Duel WebSocket ready at ws://localhost:${PORT}/ws/duel`)
+  })
+}
+
+startServer().catch((e) => { console.error(e); process.exit(1) })
