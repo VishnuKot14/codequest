@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-quest-darker text-white font-body;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(108, 61, 199, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(0, 212, 170, 0.05) 0%, transparent 50%);
+    min-height: 100vh;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #6c3dc7 #0d0d1a;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #0d0d1a;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #6c3dc7;
+    border-radius: 3px;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-quest-purple hover:bg-quest-purple-light text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-quest-purple/40 hover:shadow-xl active:scale-95;
+  }
+
+  .btn-gold {
+    @apply bg-quest-gold hover:bg-quest-gold-dark text-quest-darker font-bold px-6 py-3 rounded-lg transition-all duration-200 shadow-lg active:scale-95;
+  }
+
+  .card {
+    @apply bg-quest-dark border border-white/10 rounded-xl p-6 backdrop-blur-sm;
+  }
+
+  .card-glow {
+    @apply card hover:border-quest-purple/50 transition-all duration-300 hover:shadow-lg hover:shadow-quest-purple/10;
+  }
+
+  .xp-bar {
+    @apply h-3 bg-white/10 rounded-full overflow-hidden;
+  }
+
+  .xp-fill {
+    @apply h-full bg-gradient-to-r from-quest-purple to-quest-teal rounded-full transition-all duration-500;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .input-field {
+    @apply w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-quest-purple/60 focus:bg-white/8 transition-all duration-200;
+  }
+}
+
+/* Pixel-art style divider */
+.pixel-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6c3dc7, #00d4aa, #6c3dc7, transparent);
+}
+
+/* Floating particles */
+@keyframes particle-float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+
+.particle {
+  animation: particle-float linear infinite;
+}

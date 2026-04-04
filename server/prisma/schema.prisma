@@ -1,0 +1,195 @@
+// Prisma schema — defines our database structure.
+// Each "model" = one database table.
+// Run "npm run db:migrate" in the server folder to apply this to a real database.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Uses PostgreSQL. Set DATABASE_URL in .env (see .env.example)
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Users ─────────────────────────────────────────────────
+// Core player account + character data in one table.
+model User {
+  id        String   @id @default(cuid())  // cuid = collision-resistant unique ID
+  username  String   @unique
+  email     String   @unique
+  password  String                          // bcrypt hash — never store plain passwords
+  avatar    String   @default("⚔️")
+  heroClass String   @default("warrior")
+
+  // Game stats
+  xp        Int      @default(0)
+  level     Int      @default(1)
+  points    Int      @default(0)           // currency for the shop
+  duelsWon  Int      @default(0)
+  duelsLost Int      @default(0)
+  streak    Int      @default(0)           // consecutive days active
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations — one user has many of each of these
+  progress     Progress[]
+  achievements UserAchievement[]
+  equipment    UserEquipment[]
+  duelsSent    Duel[]            @relation("DuelChallenger")
+  duelsReceived Duel[]           @relation("DuelOpponent")
+}
+
+// ── Lessons ───────────────────────────────────────────────
+// All lesson content is stored here (not hardcoded in the frontend in production)
+model Lesson {
+  id          String   @id   // e.g. "python-1", "javascript-3"
+  language    String         // "python", "javascript", etc.
+  regionId    String         // which map region this belongs to
+  title       String
+  description String   @db.Text  // markdown content
+  starterCode String   @db.Text
+  hint        String?  @db.Text  // optional hint shown on request
+  xpReward    Int      @default(50)
+  order       Int              // order within region (1, 2, 3...)
+  isBoss      Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  progress Progress[]
+  tests    LessonTest[]
+
+  @@index([regionId, order]) // speeds up "get lessons for this region in order"
+}
+
+// ── Lesson Tests ──────────────────────────────────────────
+// Each lesson can have multiple test cases
+model LessonTest {
+  id          String @id @default(cuid())
+  lessonId    String
+  description String  // shown to user: "Output should contain Hello"
+  expected    String  // the expected stdout or return value
+
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+}
+
+// ── Progress ──────────────────────────────────────────────
+// Tracks each user's progress through each lesson
+model Progress {
+  id               String   @id @default(cuid())
+  userId           String
+  lessonId         String
+  regionId         String
+  completedAt      DateTime @default(now())
+  attempts         Int      @default(1)
+  xpEarned         Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+
+  // A user can only have one progress record per lesson
+  @@unique([userId, lessonId])
+  @@index([userId, regionId])
+}
+
+// ── Achievements ──────────────────────────────────────────
+// Achievement definitions (like a catalog)
+model Achievement {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  emoji       String
+  condition   String // e.g. "complete_5_python_lessons"
+  xpReward    Int    @default(0)
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+}
+
+// ── Shop Items ────────────────────────────────────────────
+model ShopItem {
+  id       String @id @default(cuid())
+  name     String
+  emoji    String
+  slot     String  // "helmet", "armor", "weapon", "boots", "amulet", "ring"
+  cost     Int     // cost in points
+  statBonus String // e.g. "+5% XP"
+  rarity   String  @default("common") // common, rare, epic, legendary
+
+  owners UserEquipment[]
+}
+
+model UserEquipment {
+  id         String   @id @default(cuid())
+  userId     String
+  itemId     String
+  equipped   Boolean  @default(false)
+  purchasedAt DateTime @default(now())
+
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item ShopItem @relation(fields: [itemId], references: [id])
+
+  @@unique([userId, itemId])
+}
+
+// ── Duels ─────────────────────────────────────────────────
+// PvP coding battles between two users
+model Duel {
+  id           String   @id @default(cuid())
+  challengerId String
+  opponentId   String
+  lessonId     String?  // which lesson/problem they fought over
+  language     String
+  status       String   @default("pending") // pending | active | complete
+  winnerId     String?
+  // Store each player's submission time so we can determine who was faster
+  challengerSolvedAt DateTime?
+  opponentSolvedAt   DateTime?
+  createdAt    DateTime @default(now())
+  completedAt  DateTime?
+
+  challenger User @relation("DuelChallenger", fields: [challengerId], references: [id])
+  opponent   User @relation("DuelOpponent",   fields: [opponentId],   references: [id])
+}
+
+// ── Guilds ─────────────────────────────────────────────────
+// Players can form guilds (clans) and compete together
+model Guild {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  tag         String   @unique  // short tag, e.g. "[CQ]" — shown next to username
+  description String   @default("")
+  emblem      String   @default("🛡")  // emoji used as guild icon
+  leaderId    String   // the user who created / leads the guild
+  totalXP     Int      @default(0)    // sum of all members' XP — used for guild leaderboard
+  createdAt   DateTime @default(now())
+
+  members GuildMember[]
+}
+
+// Junction table: one row per (guild, user) pair
+// A user can only be in one guild at a time (enforced by unique userId)
+model GuildMember {
+  id       String   @id @default(cuid())
+  guildId  String
+  userId   String   @unique  // @unique = one guild per user
+  role     String   @default("member")  // "leader" | "officer" | "member"
+  joinedAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  // We reference User by id but don't add a relation field on User
+  // to keep the User model lean — we query GuildMember directly when needed
+}
