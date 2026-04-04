@@ -104,9 +104,13 @@ export default function LessonPage() {
 
     const fetchLesson = async () => {
       try {
-        const res = await api.get(`/lessons/${id}`)
-        setLesson(res.data)
-        setCode(res.data.starterCode || '')
+        const [lessonRes, progressRes] = await Promise.all([
+          api.get(`/lessons/${id}`),
+          api.get(`/progress/lesson/${id}`).catch(() => ({ data: { completed: false } })),
+        ])
+        setLesson(lessonRes.data)
+        setCode(lessonRes.data.starterCode || '')
+        setCompleted(progressRes.data.completed)
       } catch {
         // Only use the fallback for python-1 — all other IDs show "not found"
         if (id === 'python-1') {

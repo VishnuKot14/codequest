@@ -123,8 +123,10 @@ export default function MapPage() {
   const handleEnterRegion = (region) => {
     if (userLevel < region.requiredLevel) return // locked
     setLanguage(region.language)
-    // Navigate to the first lesson of this region
-    navigate(`/lesson/${region.id}-1`)
+    // Resume from the next incomplete lesson, not always lesson 1
+    const completed = progressMap[region.id]?.completedLessons ?? 0
+    const nextLesson = Math.min(completed + 1, region.totalLessons)
+    navigate(`/lesson/${region.id}-${nextLesson}`)
   }
 
   return (

@@ -29,6 +29,18 @@ router.get('/map', async (req, res) => {
   }
 })
 
+// Check if a specific lesson is completed by the current user
+router.get('/lesson/:lessonId', async (req, res) => {
+  try {
+    const record = await prisma.progress.findUnique({
+      where: { userId_lessonId: { userId: req.user.id, lessonId: req.params.lessonId } }
+    })
+    res.json({ completed: !!record })
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 // Record a lesson completion + award XP
 router.post('/complete', async (req, res) => {
   const { lessonId, xpEarned } = req.body
