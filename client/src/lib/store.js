@@ -11,18 +11,26 @@ export const useAuthStore = create(
 
       login: async (email, password) => {
         set({ isLoading: true })
-        const res = await api.post('/auth/login', { email, password })
-        localStorage.setItem('cq_token', res.data.token)
-        set({ user: res.data.user, token: res.data.token, isLoading: false })
-        return res.data
+        try {
+          const res = await api.post('/auth/login', { email, password })
+          localStorage.setItem('cq_token', res.data.token)
+          set({ user: res.data.user, token: res.data.token })
+          return res.data
+        } finally {
+          set({ isLoading: false })
+        }
       },
 
-      register: async (username, email, password) => {
+      register: async (username, email, password, avatar, heroClass) => {
         set({ isLoading: true })
-        const res = await api.post('/auth/register', { username, email, password })
-        localStorage.setItem('cq_token', res.data.token)
-        set({ user: res.data.user, token: res.data.token, isLoading: false })
-        return res.data
+        try {
+          const res = await api.post('/auth/register', { username, email, password, avatar, heroClass })
+          localStorage.setItem('cq_token', res.data.token)
+          set({ user: res.data.user, token: res.data.token })
+          return res.data
+        } finally {
+          set({ isLoading: false })
+        }
       },
 
       logout: () => {
