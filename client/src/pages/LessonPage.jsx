@@ -83,7 +83,7 @@ export default function LessonPage() {
   // useParams reads URL segments — for /lesson/python-3, id = "python-3"
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuthStore()
+  const { refreshUser } = useAuthStore()
   const { triggerXPGain } = useGameStore()
 
   const [lesson, setLesson] = useState(null)
@@ -95,22 +95,29 @@ export default function LessonPage() {
 
   // Fetch lesson from server when the URL changes
   useEffect(() => {
+    // Reset state immediately when id changes so stale content doesn't linger
+    setLesson(null)
+    setCode('')
+    setOutput(null)
+    setCompleted(false)
+    setShowHint(false)
+
     const fetchLesson = async () => {
       try {
         const res = await api.get(`/lessons/${id}`)
         setLesson(res.data)
         setCode(res.data.starterCode || '')
       } catch {
-        // Use fallback for development
-        setLesson(FALLBACK_LESSON)
-        setCode(FALLBACK_LESSON.starterCode)
+        // Only use the fallback for python-1 — all other IDs show "not found"
+        if (id === 'python-1') {
+          setLesson(FALLBACK_LESSON)
+          setCode(FALLBACK_LESSON.starterCode)
+        } else {
+          setLesson({ notFound: true })
+        }
       }
     }
     fetchLesson()
-    // Reset state when navigating to a new lesson
-    setOutput(null)
-    setCompleted(false)
-    setShowHint(false)
   }, [id]) // re-run whenever `id` changes
 
   const handleRunCode = async () => {
@@ -133,11 +140,16 @@ export default function LessonPage() {
       if (res.data.success && !completed) {
         setCompleted(true)
         triggerXPGain(lesson.xpReward) // shows the XPToast notification
-        // Record progress on the server
-        await api.post('/progress/complete', {
-          lessonId: lesson.id,
-          xpEarned: lesson.xpReward,
-        })
+        try {
+          await api.post('/progress/complete', {
+            lessonId: lesson.id,
+            xpEarned: lesson.xpReward,
+          })
+          // Refresh the user in the store so the navbar XP bar updates immediately
+          await refreshUser()
+        } catch {
+          // XP save failed silently — don't block the user from continuing
+        }
       }
     } catch (err) {
       setOutput({
@@ -154,6 +166,19 @@ export default function LessonPage() {
     return (
       <div className="min-h-screen pt-16 flex items-center justify-center">
         <div className="text-white/40">Loading quest...</div>
+      </div>
+    )
+  }
+
+  if (lesson.notFound) {
+    return (
+      <div className="min-h-screen pt-16 flex items-center justify-center px-6">
+        <div className="text-center">
+          <div className="text-5xl mb-4">🗺</div>
+          <h2 className="font-quest text-2xl font-bold text-white mb-2">Lesson Not Found</h2>
+          <p className="text-white/40 mb-6">This quest hasn't been written yet. Check back soon!</p>
+          <button onClick={() => navigate('/map')} className="btn-primary">← Back to Map</button>
+        </div>
       </div>
     )
   }

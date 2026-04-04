@@ -45,14 +45,14 @@ router.post('/complete', async (req, res) => {
   }
 
   try {
-    const lesson = await prisma.lesson.findUnique({ where: { id: lessonId } })
-    if (!lesson) return res.status(404).json({ error: 'Lesson not found' })
+    // Derive regionId from lessonId (e.g. "python-3" → "python")
+    // This avoids a DB lookup so XP saves even for lessons not yet seeded
+    const regionId = lessonId.split('-').slice(0, -1).join('-') || lessonId
 
     // upsert: create if not exists, otherwise increment attempts
-    // This handles cases where the user re-submits a lesson they already completed
     await prisma.progress.upsert({
       where: { userId_lessonId: { userId: req.user.id, lessonId } },
-      create: { userId: req.user.id, lessonId, regionId: lesson.regionId, xpEarned },
+      create: { userId: req.user.id, lessonId, regionId, xpEarned },
       update: { attempts: { increment: 1 } }
     })
 
