@@ -68,6 +68,10 @@ router.post('/complete', async (req, res) => {
       data: { userId: req.user.id, lessonId, regionId, xpEarned: xp }
     })
 
+    // Points awarded per lesson = xp / 5 (so a 50xp lesson gives 10 points)
+    // Points are the leaderboard currency; XP is for leveling up
+    const pointsEarned = Math.floor(xp / 5)
+
     // Award XP and recalculate level
     const user = await prisma.user.findUnique({ where: { id: req.user.id } })
     const newXP = (user.xp || 0) + xp
@@ -83,7 +87,7 @@ router.post('/complete', async (req, res) => {
 
     const updatedUser = await prisma.user.update({
       where: { id: req.user.id },
-      data: { xp: newXP, level: newLevel },
+      data: { xp: newXP, level: newLevel, points: { increment: pointsEarned } },
       select: { xp: true, level: true, points: true }
     })
 

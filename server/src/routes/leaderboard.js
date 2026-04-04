@@ -47,9 +47,9 @@ router.get('/', async (req, res) => {
         points: userMap[p.userId]?.points ?? 0,
       }))
     } else {
-      // Global leaderboard: rank by total points
+      // Global leaderboard: rank by total XP
       const users = await prisma.user.findMany({
-        orderBy: { points: 'desc' },
+        orderBy: { xp: 'desc' },
         take: 50,
         select: { id: true, username: true, avatar: true, level: true, heroClass: true, xp: true, points: true }
       })
