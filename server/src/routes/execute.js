@@ -144,7 +144,7 @@ router.post('/', requireAuth, async (req, res) => {
       passed: output.includes(test.expected),
     }))
 
-    const allPassed = testResults.length === 0 || testResults.every((t) => t.passed)
+    const allPassed = testResults.length > 0 && testResults.every((t) => t.passed)
 
     res.json({ success: allPassed, stdout: output, testResults })
   } catch (err) {
