@@ -4437,6 +4437,11 @@ async function seed() {
       update: lessonData,
       create: { ...lessonData, tests: { create: tests } }
     })
+    // Always sync tests so existing lessons get updated test data
+    await prisma.lessonTest.deleteMany({ where: { lessonId: lesson.id } })
+    await prisma.lessonTest.createMany({
+      data: tests.map(t => ({ lessonId: lesson.id, description: t.description, expected: t.expected }))
+    })
     console.log(`  ✓ ${lesson.id}: ${lesson.title}`)
   }
 
