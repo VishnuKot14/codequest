@@ -46,6 +46,7 @@ const DUEL_PROBLEMS = {
   python: [
     {
       id: 'duel-py-1',
+      botDelay: 15 * 60 * 1000, // 15 min — medium: class + dict + sorting
       title: 'Inventory Manager',
       description: `Build a simple inventory system using a class and a dict.
 
@@ -90,6 +91,7 @@ print(inv.top(3))
     },
     {
       id: 'duel-py-2',
+      botDelay: 12 * 60 * 1000, // 12 min — medium: dict + list comprehension + sort
       title: 'Word Frequency Analyser',
       description: `Analyse word frequency in a text using dicts, list comprehensions, and sorting.
 
@@ -118,6 +120,7 @@ for item in top_words(text, 3):
     },
     {
       id: 'duel-py-3',
+      botDelay: 15 * 60 * 1000, // 15 min — medium: OOP + inheritance + loops
       title: 'Dungeon Crawler Simulator',
       description: `Simulate a dungeon using OOP, inheritance, and list comprehensions.
 
@@ -173,6 +176,7 @@ print(total_reward)
     },
     {
       id: 'duel-py-4',
+      botDelay: 25 * 60 * 1000, // 25 min — hard: cache eviction logic
       title: 'LRU Cache',
       description: `Implement a Least Recently Used (LRU) cache from scratch.
 
@@ -224,6 +228,7 @@ print(cache.get("d"))
     },
     {
       id: 'duel-py-5',
+      botDelay: 25 * 60 * 1000, // 25 min — hard: graph traversal + shortest path
       title: 'Graph BFS',
       description: `Implement Breadth-First Search on an adjacency list graph.
 
@@ -268,6 +273,7 @@ print(shortest_path(graph, "A", "F"))
     },
     {
       id: 'duel-py-6',
+      botDelay: 20 * 60 * 1000, // 20 min — medium-hard: parameterised decorator factory
       title: 'Decorator Chain',
       description: `Build a decorator pipeline that transforms function output.
 
@@ -302,6 +308,7 @@ print(greet("aria"))
     },
     {
       id: 'duel-py-7',
+      botDelay: 15 * 60 * 1000, // 15 min — medium: generators + dict grouping
       title: 'Flatten & Group',
       description: `Combine generators, itertools-style logic, and dict grouping.
 
@@ -334,6 +341,7 @@ print(sorted(groups["odd"]))
     },
     {
       id: 'duel-py-8',
+      botDelay: 25 * 60 * 1000, // 25 min — hard: recursive BST insert + traversal
       title: 'Binary Search Tree',
       description: `Implement a Binary Search Tree with insert, search, and in-order traversal.
 
@@ -378,6 +386,7 @@ print(bst.search(55))
     },
     {
       id: 'duel-py-9',
+      botDelay: 28 * 60 * 1000, // 28 min — hard: sliding window algorithm
       title: 'Rate Limiter',
       description: `Implement a token-bucket rate limiter using closures and time.
 
@@ -417,6 +426,7 @@ print(results)
     },
     {
       id: 'duel-py-10',
+      botDelay: 35 * 60 * 1000, // 35 min — very hard: stack-based parser with precedence
       title: 'Mini Expression Evaluator',
       description: `Parse and evaluate simple arithmetic expressions using a stack.
 
@@ -456,6 +466,7 @@ print(evaluate("100 * ( 2 + 12 ) / 14"))
   javascript: [
     {
       id: 'duel-js-1',
+      botDelay: 15 * 60 * 1000, // 15 min — medium: private fields + getters + array methods
       title: 'Quest Log',
       description: `Build a quest tracking system using classes, closures, and array methods.
 
@@ -514,6 +525,7 @@ log.summary().forEach(s => console.log(s))
     },
     {
       id: 'duel-js-2',
+      botDelay: 12 * 60 * 1000, // 12 min — medium: Promise.all + async/await
       title: 'Async Hero Stats',
       description: `Combine async/await, Promises, array methods, and error handling.
 
@@ -553,6 +565,7 @@ main()
     },
     {
       id: 'duel-js-3',
+      botDelay: 15 * 60 * 1000, // 15 min — medium: closures + Map + reduce
       title: 'Spell Combinatorics',
       description: `Use closures, higher-order functions, Map, and reduce.
 
@@ -600,6 +613,7 @@ console.log([...map.values()].reduce((a, b) => a + b, 0))
     },
     {
       id: 'duel-js-4',
+      botDelay: 18 * 60 * 1000, // 18 min — medium-hard: memoization + recursive caching
       title: 'Memoize & Fibonacci',
       description: `Implement a generic memoize function and use it to optimise recursive Fibonacci.
 
@@ -632,6 +646,7 @@ console.log(fastFib(30))
     },
     {
       id: 'duel-js-5',
+      botDelay: 22 * 60 * 1000, // 22 min — hard: pub/sub pattern with once + off
       title: 'Event Emitter',
       description: `Build a typed EventEmitter from scratch using Maps and closures.
 
@@ -689,6 +704,7 @@ emitter.emit("msg", "silent")
     },
     {
       id: 'duel-js-6',
+      botDelay: 20 * 60 * 1000, // 20 min — medium-hard: recursive object comparison
       title: 'Deep Object Diff',
       description: `Recursively diff two objects and report what changed.
 
@@ -729,6 +745,7 @@ console.log(result.guild.after)
     },
     {
       id: 'duel-js-7',
+      botDelay: 28 * 60 * 1000, // 28 min — hard: concurrency limiting + async queuing
       title: 'Promise Queue',
       description: `Implement a concurrency-limited async task queue.
 
@@ -784,6 +801,7 @@ Promise.all([
     },
     {
       id: 'duel-js-8',
+      botDelay: 15 * 60 * 1000, // 15 min — medium: pointer manipulation + in-place reversal
       title: 'Linked List',
       description: `Implement a singly linked list with common operations.
 
@@ -843,6 +861,7 @@ console.log(list.toArray())
     },
     {
       id: 'duel-js-9',
+      botDelay: 25 * 60 * 1000, // 25 min — hard: partial application + function pipelines
       title: 'Curry & Compose',
       description: `Implement function currying and composition from scratch.
 
@@ -902,6 +921,7 @@ console.log(pipeline(3))
     },
     {
       id: 'duel-js-10',
+      botDelay: 28 * 60 * 1000, // 28 min — hard: Redux pattern + pub/sub + unsubscribe
       title: 'Reactive Store',
       description: `Build a mini reactive state store (like a simplified Redux/Zustand).
 
@@ -1053,8 +1073,9 @@ function startBotDuel(player, language) {
 
   send(player.ws, { type: 'duel_start', duelId, problem, opponentName: botName })
 
-  // Bot submits after 30–35 minutes — gives player a full interview-style window
-  const botDelay = 1800000 + Math.random() * 300000
+  // Bot delay comes from the problem itself — scaled to expected human solve time
+  // Add a small random jitter (±1 min) so it doesn't feel robotic
+  const botDelay = (problem.botDelay ?? 20 * 60 * 1000) + (Math.random() * 2 - 1) * 60 * 1000
   setTimeout(async () => {
     const duel = activeduels.get(duelId)
     if (!duel || duel.resolved) return
