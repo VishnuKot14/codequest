@@ -16,8 +16,8 @@ const REGIONS = [
     border: 'border-blue-500/30',
     glow: 'shadow-blue-500/20',
     requiredLevel: 1,
-    totalLessons: 12,
-    boss: { name: 'The Syntax Serpent', emoji: '🐲' },
+    totalLessons: 30,
+    boss: { name: 'The Grand Pythonmaster', emoji: '🐲' },
   },
   {
     id: 'javascript',
@@ -29,8 +29,8 @@ const REGIONS = [
     border: 'border-yellow-500/30',
     glow: 'shadow-yellow-500/20',
     requiredLevel: 3,
-    totalLessons: 15,
-    boss: { name: 'The Async Dragon', emoji: '🔥' },
+    totalLessons: 30,
+    boss: { name: 'The Full-Stack Phantom', emoji: '🔥' },
   },
   {
     id: 'typescript',
@@ -42,8 +42,8 @@ const REGIONS = [
     border: 'border-blue-400/30',
     glow: 'shadow-blue-400/20',
     requiredLevel: 6,
-    totalLessons: 14,
-    boss: { name: 'The Type Titan', emoji: '🗿' },
+    totalLessons: 30,
+    boss: { name: 'The Type Colossus', emoji: '🗿' },
   },
   {
     id: 'sql',
@@ -55,8 +55,8 @@ const REGIONS = [
     border: 'border-teal-500/30',
     glow: 'shadow-teal-500/20',
     requiredLevel: 4,
-    totalLessons: 10,
-    boss: { name: 'The Query Kraken', emoji: '🦑' },
+    totalLessons: 25,
+    boss: { name: 'The Database Demon', emoji: '🦑' },
   },
   {
     id: 'rust',
@@ -68,8 +68,8 @@ const REGIONS = [
     border: 'border-orange-500/30',
     glow: 'shadow-orange-500/20',
     requiredLevel: 8,
-    totalLessons: 16,
-    boss: { name: 'The Memory Demon', emoji: '💀' },
+    totalLessons: 30,
+    boss: { name: 'The Borrow Checker Beast', emoji: '💀' },
   },
   {
     id: 'go',
@@ -81,8 +81,8 @@ const REGIONS = [
     border: 'border-cyan-500/30',
     glow: 'shadow-cyan-500/20',
     requiredLevel: 5,
-    totalLessons: 11,
-    boss: { name: 'The Goroutine Golem', emoji: '🤖' },
+    totalLessons: 30,
+    boss: { name: 'The Concurrency Colossus', emoji: '🤖' },
   },
 ]
 
