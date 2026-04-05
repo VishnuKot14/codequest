@@ -41,31 +41,282 @@ const BOT_DELAY = 15000
 const QUEUE_TIMEOUT = 30000
 
 // ── Duel problems ─────────────────────────────────────────
-// A small pool of problems used in duels. In production these come from the DB.
+// Duel problems — multi-fundamental challenges designed to take 5–10 minutes
 const DUEL_PROBLEMS = {
   python: [
     {
       id: 'duel-py-1',
-      title: 'Sum of Two Numbers',
-      description: 'Write a function add(a, b) that returns a + b.\nThen print add(3, 7)',
-      starterCode: 'def add(a, b):\n    # your code here\n    pass\n\nprint(add(3, 7))',
-      expected: '10',
+      title: 'Inventory Manager',
+      description: `Build a simple inventory system using a class and a dict.
+
+1. Create a class \`Inventory\` with a private \`_items\` dict (name -> qty).
+2. Add method \`add(name, qty)\` — adds qty to existing or creates new entry.
+3. Add method \`remove(name, qty)\` — reduces qty; if qty drops to 0 or below, delete the entry.
+4. Add method \`top(n)\` — returns a list of the top n item names sorted by qty descending.
+5. Create an Inventory, run these operations in order:
+   inv.add("sword", 5)
+   inv.add("potion", 12)
+   inv.add("shield", 3)
+   inv.add("potion", 8)
+   inv.remove("sword", 5)
+   inv.add("arrow", 25)
+   print(inv.top(3))
+
+Expected output (one line, a Python list):
+['arrow', 'potion', 'shield']`,
+      starterCode: `class Inventory:
+    def __init__(self):
+        self._items = {}
+
+    def add(self, name, qty):
+        pass  # implement
+
+    def remove(self, name, qty):
+        pass  # implement
+
+    def top(self, n):
+        pass  # implement
+
+inv = Inventory()
+inv.add("sword", 5)
+inv.add("potion", 12)
+inv.add("shield", 3)
+inv.add("potion", 8)
+inv.remove("sword", 5)
+inv.add("arrow", 25)
+print(inv.top(3))
+`,
+      expected: "['arrow', 'potion', 'shield']",
     },
     {
       id: 'duel-py-2',
-      title: 'Reverse a String',
-      description: 'Print the reverse of the string "quest"',
-      starterCode: 'word = "quest"\n# print the reversed word\n',
-      expected: 'tseuq',
+      title: 'Word Frequency Analyser',
+      description: `Analyse word frequency in a text using dicts, list comprehensions, and sorting.
+
+Given the string:
+text = "the hero cast a spell the spell hit the dragon the dragon fled"
+
+1. Write \`word_freq(text)\` that returns a dict of {word: count}.
+2. Write \`top_words(text, n)\` that returns a list of the top n most frequent words as tuples (word, count), sorted by count descending. Ties broken alphabetically ascending.
+3. Print the result of \`top_words(text, 3)\` — one tuple per line.
+
+Expected output:
+('the', 4)
+('dragon', 2)
+('spell', 2)`,
+      starterCode: `def word_freq(text):
+    pass  # implement
+
+def top_words(text, n):
+    pass  # implement
+
+text = "the hero cast a spell the spell hit the dragon the dragon fled"
+for item in top_words(text, 3):
+    print(item)
+`,
+      expected: "('the', 4)\n('dragon', 2)\n('spell', 2)",
+    },
+    {
+      id: 'duel-py-3',
+      title: 'Dungeon Crawler Simulator',
+      description: `Simulate a dungeon using OOP, inheritance, and list comprehensions.
+
+1. Create base class \`Entity\` with \`name\` (str) and \`hp\` (int). Add method \`is_alive()\` returning \`hp > 0\`.
+2. Create \`Hero(Entity)\` with extra \`attack_power\` (int). Add \`attack(enemy)\` which reduces enemy.hp by attack_power.
+3. Create \`Monster(Entity)\` with extra \`reward\` (int).
+4. Simulate:
+   - Create Hero("Aria", hp=100, attack_power=35)
+   - Create monsters: Monster("Goblin", hp=40, reward=10), Monster("Troll", hp=90, reward=25), Monster("Dragon", hp=60, reward=50)
+   - Hero attacks each monster until it dies (loop until not is_alive)
+   - Collect rewards only from defeated monsters
+5. Print total reward earned.
+
+Expected output:
+85`,
+      starterCode: `class Entity:
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+
+    def is_alive(self):
+        pass  # implement
+
+class Hero(Entity):
+    def __init__(self, name, hp, attack_power):
+        super().__init__(name, hp)
+        self.attack_power = attack_power
+
+    def attack(self, enemy):
+        pass  # implement
+
+class Monster(Entity):
+    def __init__(self, name, hp, reward):
+        super().__init__(name, hp)
+        self.reward = reward
+
+hero = Hero("Aria", hp=100, attack_power=35)
+monsters = [
+    Monster("Goblin", hp=40, reward=10),
+    Monster("Troll", hp=90, reward=25),
+    Monster("Dragon", hp=60, reward=50),
+]
+
+total_reward = 0
+for monster in monsters:
+    while monster.is_alive():
+        hero.attack(monster)
+    total_reward += monster.reward
+
+print(total_reward)
+`,
+      expected: '85',
     },
   ],
+
   javascript: [
     {
       id: 'duel-js-1',
-      title: 'Double the Number',
-      description: 'Write a function double(n) that returns n * 2. Then console.log(double(21))',
-      starterCode: 'function double(n) {\n  // your code\n}\nconsole.log(double(21))',
-      expected: '42',
+      title: 'Quest Log',
+      description: `Build a quest tracking system using classes, closures, and array methods.
+
+1. Create class \`QuestLog\` with private \`#quests = []\` array.
+2. Add \`addQuest(name, xp)\` — pushes \`{ name, xp, done: false }\`.
+3. Add \`complete(name)\` — marks the matching quest done. If not found, does nothing.
+4. Add getter \`totalXP\` — returns sum of xp for completed quests only.
+5. Add \`summary()\` — returns an array of strings: \`"[name] - done"\` or \`"[name] - pending"\` for each quest.
+6. Run:
+   const log = new QuestLog()
+   log.addQuest("Slay Dragon", 150)
+   log.addQuest("Find Sword", 80)
+   log.addQuest("Rescue King", 120)
+   log.complete("Slay Dragon")
+   log.complete("Rescue King")
+   console.log(log.totalXP)
+   log.summary().forEach(s => console.log(s))
+
+Expected output:
+270
+Slay Dragon - done
+Find Sword - pending
+Rescue King - done`,
+      starterCode: `class QuestLog {
+  #quests = []
+
+  addQuest(name, xp) {
+    // implement
+  }
+
+  complete(name) {
+    // implement
+  }
+
+  get totalXP() {
+    // implement
+    return 0
+  }
+
+  summary() {
+    // implement
+    return []
+  }
+}
+
+const log = new QuestLog()
+log.addQuest("Slay Dragon", 150)
+log.addQuest("Find Sword", 80)
+log.addQuest("Rescue King", 120)
+log.complete("Slay Dragon")
+log.complete("Rescue King")
+console.log(log.totalXP)
+log.summary().forEach(s => console.log(s))
+`,
+      expected: '270\nSlay Dragon - done\nFind Sword - pending\nRescue King - done',
+    },
+    {
+      id: 'duel-js-2',
+      title: 'Async Hero Stats',
+      description: `Combine async/await, Promises, array methods, and error handling.
+
+1. Write async function \`fetchStats(heroName)\` that returns a Promise resolving to:
+   - \`{ name: heroName, hp: heroName.length * 10, power: heroName.length * 7 }\`
+2. Write async function \`fetchAllStats(names)\` that calls \`fetchStats\` for all names in parallel using \`Promise.all\`.
+3. Write \`strongest(stats)\` — returns the stat object with the highest \`power\`.
+4. Run with \`["Aria", "Bolt", "Cassandra"]\`:
+   - Fetch all stats in parallel
+   - Find and print the strongest hero's name and power on separate lines
+
+Expected output:
+Cassandra
+63`,
+      starterCode: `async function fetchStats(heroName) {
+  // implement
+}
+
+async function fetchAllStats(names) {
+  // implement
+}
+
+function strongest(stats) {
+  // implement
+}
+
+async function main() {
+  const stats = await fetchAllStats(["Aria", "Bolt", "Cassandra"])
+  const best = strongest(stats)
+  console.log(best.name)
+  console.log(best.power)
+}
+
+main()
+`,
+      expected: 'Cassandra\n63',
+    },
+    {
+      id: 'duel-js-3',
+      title: 'Spell Combinatorics',
+      description: `Use closures, higher-order functions, Map, and reduce.
+
+1. Write \`makeSpellCaster(multiplier)\` — returns a function \`cast(spellName, basePower)\` that returns \`basePower * multiplier\`.
+2. Write \`combineSpells(spells, caster)\` — takes an array of \`{ name, power }\` objects and a caster function, returns a new array with each spell's power run through the caster.
+3. Write \`spellMap(spells)\` — returns a Map of \`spellName -> power\` from the (already-cast) spell array.
+4. Run:
+   const fireMage = makeSpellCaster(3)
+   const spells = [{ name: "Fireball", power: 10 }, { name: "Inferno", power: 15 }, { name: "Ember", power: 5 }]
+   const boosted = combineSpells(spells, fireMage)
+   const map = spellMap(boosted)
+   console.log(map.get("Fireball"))
+   console.log(map.get("Inferno"))
+   console.log([...map.values()].reduce((a, b) => a + b, 0))
+
+Expected output:
+30
+45
+90`,
+      starterCode: `function makeSpellCaster(multiplier) {
+  // implement
+}
+
+function combineSpells(spells, caster) {
+  // implement
+}
+
+function spellMap(spells) {
+  // implement
+}
+
+const fireMage = makeSpellCaster(3)
+const spells = [
+  { name: "Fireball", power: 10 },
+  { name: "Inferno", power: 15 },
+  { name: "Ember", power: 5 },
+]
+const boosted = combineSpells(spells, fireMage)
+const map = spellMap(boosted)
+console.log(map.get("Fireball"))
+console.log(map.get("Inferno"))
+console.log([...map.values()].reduce((a, b) => a + b, 0))
+`,
+      expected: '30\n45\n90',
     },
   ],
 }
@@ -88,7 +339,7 @@ async function runCode(code, language) {
   try {
     await writeFile(filepath, code, 'utf-8')
     const stdout = await new Promise((resolve, reject) => {
-      exec(runner(filepath), { timeout: 5000, maxBuffer: 1024 * 32 }, (err, out, errOut) => {
+      exec(runner(filepath), { timeout: 10000, maxBuffer: 1024 * 64 }, (err, out, errOut) => {
         if (err?.killed) return reject(new Error('Time limit exceeded'))
         resolve(out + (errOut ? `\n${errOut}` : ''))
       })
@@ -166,9 +417,9 @@ function startBotDuel(player, language) {
 
   send(player.ws, { type: 'duel_start', duelId, problem, opponentName: botName })
 
-  // Bot submits the correct answer after a random delay (8–20 seconds)
-  // giving the human a real chance to win
-  const botDelay = 8000 + Math.random() * 12000
+  // Bot submits the correct answer after a random delay (5–10 minutes)
+  // giving the human a real chance to solve the harder problems
+  const botDelay = 300000 + Math.random() * 300000
   setTimeout(async () => {
     const duel = activeduels.get(duelId)
     if (!duel || duel.resolved) return
