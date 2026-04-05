@@ -86,8 +86,8 @@ attachDuelServer(httpServer)
 const prisma = new PrismaClient()
 async function startServer() {
   const lessonCount = await prisma.lesson.count()
-  if (lessonCount === 0) {
-    console.log('📦 No lessons found — running seed...')
+  if (lessonCount < 175) {
+    console.log(`📦 Found ${lessonCount} lessons, expected 175 — running seed...`)
     await seed()
   }
   await prisma.$disconnect()
