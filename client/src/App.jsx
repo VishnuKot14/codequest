@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
@@ -12,6 +13,7 @@ import ShopPage from './pages/ShopPage'
 import GuildPage from './pages/GuildPage'
 import Navbar from './components/Navbar'
 import XPToast from './components/XPToast'
+import { useAuthStore } from './lib/store'
 
 // ProtectedRoute: if the user has no JWT token, redirect to /login.
 // We check localStorage directly (not the store) so it works even before
@@ -33,6 +35,12 @@ function AppLayout({ children }) {
 }
 
 export default function App() {
+  const { refreshUser } = useAuthStore()
+
+  useEffect(() => {
+    if (localStorage.getItem('cq_token')) refreshUser()
+  }, [])
+
   return (
     <BrowserRouter>
       {/* XPToast floats above everything — rendered once at the app root */}
