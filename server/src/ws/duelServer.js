@@ -171,6 +171,286 @@ print(total_reward)
 `,
       expected: '85',
     },
+    {
+      id: 'duel-py-4',
+      title: 'LRU Cache',
+      description: `Implement a Least Recently Used (LRU) cache from scratch.
+
+An LRU cache evicts the least recently used item when it exceeds capacity.
+
+1. Implement class \`LRUCache\` with \`__init__(self, capacity)\`.
+2. Add \`get(key)\` — returns the value if key exists (and marks it as recently used), else returns -1.
+3. Add \`put(key, value)\` — inserts/updates the key. If over capacity, evict the least recently used key.
+4. Use only a dict and manual ordering (or collections.OrderedDict).
+5. Run:
+   cache = LRUCache(3)
+   cache.put("a", 1)
+   cache.put("b", 2)
+   cache.put("c", 3)
+   cache.get("a")       # use "a" — now "b" is LRU
+   cache.put("d", 4)    # evicts "b"
+   print(cache.get("b"))  # -1 (evicted)
+   print(cache.get("a"))  # 1
+   print(cache.get("d"))  # 4
+
+Expected output:
+-1
+1
+4`,
+      starterCode: `from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+
+    def get(self, key):
+        pass  # implement
+
+    def put(self, key, value):
+        pass  # implement
+
+cache = LRUCache(3)
+cache.put("a", 1)
+cache.put("b", 2)
+cache.put("c", 3)
+cache.get("a")
+cache.put("d", 4)
+print(cache.get("b"))
+print(cache.get("a"))
+print(cache.get("d"))
+`,
+      expected: '-1\n1\n4',
+    },
+    {
+      id: 'duel-py-5',
+      title: 'Graph BFS',
+      description: `Implement Breadth-First Search on an adjacency list graph.
+
+1. Represent the graph as a dict of lists (adjacency list).
+2. Write \`bfs(graph, start)\` that returns a list of nodes in BFS visit order.
+3. Write \`shortest_path(graph, start, end)\` that returns the length of the shortest path (number of edges) between start and end, or -1 if unreachable.
+4. Use this graph:
+   graph = {
+     "A": ["B", "C"],
+     "B": ["A", "D", "E"],
+     "C": ["A", "F"],
+     "D": ["B"],
+     "E": ["B", "F"],
+     "F": ["C", "E"]
+   }
+5. Print bfs order starting from "A", then print shortest_path("A", "F").
+
+Expected output:
+['A', 'B', 'C', 'D', 'E', 'F']
+2`,
+      starterCode: `from collections import deque
+
+def bfs(graph, start):
+    pass  # implement
+
+def shortest_path(graph, start, end):
+    pass  # implement
+
+graph = {
+    "A": ["B", "C"],
+    "B": ["A", "D", "E"],
+    "C": ["A", "F"],
+    "D": ["B"],
+    "E": ["B", "F"],
+    "F": ["C", "E"]
+}
+
+print(bfs(graph, "A"))
+print(shortest_path(graph, "A", "F"))
+`,
+      expected: "['A', 'B', 'C', 'D', 'E', 'F']\n2",
+    },
+    {
+      id: 'duel-py-6',
+      title: 'Decorator Chain',
+      description: `Build a decorator pipeline that transforms function output.
+
+1. Write decorator \`@uppercase\` that converts string return value to uppercase.
+2. Write decorator \`@exclaim\` that appends "!!!" to string return value.
+3. Write decorator \`@repeat(n)\` (a parameterised decorator factory) that calls the function n times and joins results with " | ".
+4. Apply all three (in this order from outermost to innermost: repeat(3), uppercase, exclaim) to function \`greet(name)\` which returns \`"hello " + name\`.
+5. Print \`greet("aria")\`.
+
+Expected output:
+HELLO ARIA!!! | HELLO ARIA!!! | HELLO ARIA!!!`,
+      starterCode: `def uppercase(func):
+    pass  # implement
+
+def exclaim(func):
+    pass  # implement
+
+def repeat(n):
+    def decorator(func):
+        pass  # implement
+    return decorator
+
+@repeat(3)
+@uppercase
+@exclaim
+def greet(name):
+    return "hello " + name
+
+print(greet("aria"))
+`,
+      expected: 'HELLO ARIA!!! | HELLO ARIA!!! | HELLO ARIA!!!',
+    },
+    {
+      id: 'duel-py-7',
+      title: 'Flatten & Group',
+      description: `Combine generators, itertools-style logic, and dict grouping.
+
+1. Write generator \`flatten(nested)\` that lazily yields every element from an arbitrarily nested list.
+2. Write \`group_by(items, key_fn)\` that returns a dict mapping each key (from key_fn) to a list of matching items.
+3. Given:
+   data = [[1, 2, [3, 4]], [5, [6, [7, 8]]], 9, 10]
+   flat = list(flatten(data))
+   groups = group_by(flat, lambda x: "even" if x % 2 == 0 else "odd")
+4. Print len(flat), then print sorted(groups["even"]), then print sorted(groups["odd"]).
+
+Expected output:
+10
+[2, 4, 6, 8, 10]
+[1, 3, 5, 7, 9]`,
+      starterCode: `def flatten(nested):
+    pass  # implement — use yield / yield from
+
+def group_by(items, key_fn):
+    pass  # implement
+
+data = [[1, 2, [3, 4]], [5, [6, [7, 8]]], 9, 10]
+flat = list(flatten(data))
+groups = group_by(flat, lambda x: "even" if x % 2 == 0 else "odd")
+print(len(flat))
+print(sorted(groups["even"]))
+print(sorted(groups["odd"]))
+`,
+      expected: '10\n[2, 4, 6, 8, 10]\n[1, 3, 5, 7, 9]',
+    },
+    {
+      id: 'duel-py-8',
+      title: 'Binary Search Tree',
+      description: `Implement a Binary Search Tree with insert, search, and in-order traversal.
+
+1. Create class \`Node\` with \`val\`, \`left = None\`, \`right = None\`.
+2. Create class \`BST\` with \`insert(val)\` and \`inorder()\` (returns sorted list) and \`search(val)\` (returns True/False).
+3. Insert: 50, 30, 70, 20, 40, 60, 80
+4. Print inorder() result.
+5. Print search(40), then print search(55).
+
+Expected output:
+[20, 30, 40, 50, 60, 70, 80]
+True
+False`,
+      starterCode: `class Node:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, val):
+        pass  # implement
+
+    def inorder(self):
+        pass  # implement — return sorted list
+
+    def search(self, val):
+        pass  # implement — return True/False
+
+bst = BST()
+for v in [50, 30, 70, 20, 40, 60, 80]:
+    bst.insert(v)
+
+print(bst.inorder())
+print(bst.search(40))
+print(bst.search(55))
+`,
+      expected: '[20, 30, 40, 50, 60, 70, 80]\nTrue\nFalse',
+    },
+    {
+      id: 'duel-py-9',
+      title: 'Rate Limiter',
+      description: `Implement a token-bucket rate limiter using closures and time.
+
+1. Write \`make_rate_limiter(rate, per)\` — returns a function \`allow()\` that returns True if a request is allowed, False if rate-limited.
+   - \`rate\` = max requests allowed per \`per\` seconds.
+   - Use a sliding window: track timestamps of recent calls, discard those older than \`per\` seconds.
+2. Simulate (without real time — use a manual clock):
+   Write \`make_rate_limiter_manual(rate, per)\` that takes an extra \`now\` argument in \`allow(now)\`.
+3. Run:
+   limiter = make_rate_limiter_manual(3, 10)
+   results = [
+       limiter(0), limiter(1), limiter(2),   # 3 allowed
+       limiter(3),                             # 4th in window — denied
+       limiter(11),                            # window reset — allowed
+   ]
+   print(results)
+
+Expected output:
+[True, True, True, False, True]`,
+      starterCode: `def make_rate_limiter_manual(rate, per):
+    timestamps = []
+
+    def allow(now):
+        pass  # implement sliding window
+
+    return allow
+
+limiter = make_rate_limiter_manual(3, 10)
+results = [
+    limiter(0), limiter(1), limiter(2),
+    limiter(3),
+    limiter(11),
+]
+print(results)
+`,
+      expected: '[True, True, True, False, True]',
+    },
+    {
+      id: 'duel-py-10',
+      title: 'Mini Expression Evaluator',
+      description: `Parse and evaluate simple arithmetic expressions using a stack.
+
+Implement a function \`evaluate(expr)\` that evaluates a string expression containing:
+- Non-negative integers
+- Operators: +, -, *, /  (integer division for /)
+- Parentheses for grouping
+- Spaces (ignore them)
+
+You must handle operator precedence (* and / before + and -) and parentheses correctly.
+
+Do NOT use eval().
+
+Test:
+print(evaluate("3 + 5"))
+print(evaluate("10 + 2 * 6"))
+print(evaluate("100 * ( 2 + 12 ) / 14"))
+
+Expected output:
+8
+22
+100`,
+      starterCode: `def evaluate(expr):
+    tokens = expr.replace('(', ' ( ').replace(')', ' ) ').split()
+    # Hint: use two stacks — one for numbers, one for operators
+    # Handle precedence by checking before pushing each operator
+    pass
+
+print(evaluate("3 + 5"))
+print(evaluate("10 + 2 * 6"))
+print(evaluate("100 * ( 2 + 12 ) / 14"))
+`,
+      expected: '8\n22\n100',
+    },
   ],
 
   javascript: [
@@ -276,9 +556,9 @@ main()
       title: 'Spell Combinatorics',
       description: `Use closures, higher-order functions, Map, and reduce.
 
-1. Write \`makeSpellCaster(multiplier)\` — returns a function \`cast(spellName, basePower)\` that returns \`basePower * multiplier\`.
+1. Write \`makeSpellCaster(multiplier)\` — returns a function that takes \`(spellName, basePower)\` and returns \`basePower * multiplier\`.
 2. Write \`combineSpells(spells, caster)\` — takes an array of \`{ name, power }\` objects and a caster function, returns a new array with each spell's power run through the caster.
-3. Write \`spellMap(spells)\` — returns a Map of \`spellName -> power\` from the (already-cast) spell array.
+3. Write \`spellMap(spells)\` — returns a Map of \`spellName -> power\` from the spell array.
 4. Run:
    const fireMage = makeSpellCaster(3)
    const spells = [{ name: "Fireball", power: 10 }, { name: "Inferno", power: 15 }, { name: "Ember", power: 5 }]
@@ -317,6 +597,357 @@ console.log(map.get("Inferno"))
 console.log([...map.values()].reduce((a, b) => a + b, 0))
 `,
       expected: '30\n45\n90',
+    },
+    {
+      id: 'duel-js-4',
+      title: 'Memoize & Fibonacci',
+      description: `Implement a generic memoize function and use it to optimise recursive Fibonacci.
+
+1. Write \`memoize(fn)\` — returns a wrapped version of \`fn\` that caches results by argument. Use a Map internally.
+2. Write recursive \`fib(n)\` (without memoize first).
+3. Apply: \`const fastFib = memoize(fib)\` — BUT since \`fib\` calls itself, you need to write it so the recursive calls also go through the cache. The cleanest way: define \`fib\` to call \`fastFib\` internally.
+4. Print \`fastFib(10)\`, \`fastFib(20)\`, \`fastFib(30)\`.
+
+Expected output:
+55
+6765
+832040`,
+      starterCode: `function memoize(fn) {
+  // implement using Map
+}
+
+// Define fib to use the memoized version for recursive calls
+let fastFib
+function fib(n) {
+  if (n <= 1) return n
+  return fastFib(n - 1) + fastFib(n - 2)
+}
+fastFib = memoize(fib)
+
+console.log(fastFib(10))
+console.log(fastFib(20))
+console.log(fastFib(30))
+`,
+      expected: '55\n6765\n832040',
+    },
+    {
+      id: 'duel-js-5',
+      title: 'Event Emitter',
+      description: `Build a typed EventEmitter from scratch using Maps and closures.
+
+1. Implement class \`EventEmitter\` with:
+   - \`on(event, listener)\` — register a listener
+   - \`off(event, listener)\` — remove a specific listener
+   - \`emit(event, ...args)\` — call all listeners for the event with args
+   - \`once(event, listener)\` — listener fires only once then auto-removes
+2. Run:
+   const emitter = new EventEmitter()
+   const log = (msg) => console.log("log:", msg)
+   emitter.on("msg", log)
+   emitter.once("msg", (msg) => console.log("once:", msg))
+   emitter.emit("msg", "hello")   // fires log + once
+   emitter.emit("msg", "world")   // fires only log (once removed)
+   emitter.off("msg", log)
+   emitter.emit("msg", "silent")  // nothing fires
+
+Expected output:
+log: hello
+once: hello
+log: world`,
+      starterCode: `class EventEmitter {
+  constructor() {
+    this._listeners = new Map()
+  }
+
+  on(event, listener) {
+    // implement
+  }
+
+  off(event, listener) {
+    // implement
+  }
+
+  emit(event, ...args) {
+    // implement
+  }
+
+  once(event, listener) {
+    // implement using on + off
+  }
+}
+
+const emitter = new EventEmitter()
+const log = (msg) => console.log("log:", msg)
+emitter.on("msg", log)
+emitter.once("msg", (msg) => console.log("once:", msg))
+emitter.emit("msg", "hello")
+emitter.emit("msg", "world")
+emitter.off("msg", log)
+emitter.emit("msg", "silent")
+`,
+      expected: 'log: hello\nonce: hello\nlog: world',
+    },
+    {
+      id: 'duel-js-6',
+      title: 'Deep Object Diff',
+      description: `Recursively diff two objects and report what changed.
+
+Write \`diff(obj1, obj2)\` that returns an object describing the differences:
+- For each key: if values are equal, skip it.
+- If a value changed: \`{ before: oldVal, after: newVal }\`
+- If a key was added: \`{ before: undefined, after: newVal }\`
+- If a key was removed: \`{ before: oldVal, after: undefined }\`
+- If both values are objects: recurse into them.
+
+Run:
+const a = { name: "Aria", level: 5, stats: { hp: 100, mp: 50 } }
+const b = { name: "Aria", level: 10, stats: { hp: 120, mp: 50 }, guild: "Ironclad" }
+const result = diff(a, b)
+console.log(result.level.before)
+console.log(result.level.after)
+console.log(result.stats.hp.after)
+console.log(result.guild.after)
+
+Expected output:
+5
+10
+120
+Ironclad`,
+      starterCode: `function diff(obj1, obj2) {
+  // implement recursively
+}
+
+const a = { name: "Aria", level: 5, stats: { hp: 100, mp: 50 } }
+const b = { name: "Aria", level: 10, stats: { hp: 120, mp: 50 }, guild: "Ironclad" }
+const result = diff(a, b)
+console.log(result.level.before)
+console.log(result.level.after)
+console.log(result.stats.hp.after)
+console.log(result.guild.after)
+`,
+      expected: '5\n10\n120\nIronclad',
+    },
+    {
+      id: 'duel-js-7',
+      title: 'Promise Queue',
+      description: `Implement a concurrency-limited async task queue.
+
+Write class \`PromiseQueue\` that runs async tasks with a max concurrency limit.
+
+1. \`constructor(concurrency)\` — max number of tasks running simultaneously.
+2. \`add(asyncFn)\` — adds an async function to the queue, returns a Promise that resolves with its result.
+3. Tasks beyond the concurrency limit wait until a slot frees up.
+
+Simulate with tasks that resolve after a delay:
+const queue = new PromiseQueue(2)
+const delay = (ms, val) => new Promise(res => setTimeout(() => res(val), ms))
+const results = await Promise.all([
+  queue.add(() => delay(50, "A")),
+  queue.add(() => delay(30, "B")),
+  queue.add(() => delay(10, "C")),
+  queue.add(() => delay(20, "D")),
+])
+console.log(results.join(","))
+
+Expected output:
+A,B,C,D`,
+      starterCode: `class PromiseQueue {
+  constructor(concurrency) {
+    this.concurrency = concurrency
+    this.running = 0
+    this.queue = []
+  }
+
+  add(asyncFn) {
+    return new Promise((resolve, reject) => {
+      this.queue.push({ asyncFn, resolve, reject })
+      this._run()
+    })
+  }
+
+  _run() {
+    // implement: while running < concurrency and queue not empty, dequeue and run
+  }
+}
+
+const queue = new PromiseQueue(2)
+const delay = (ms, val) => new Promise(res => setTimeout(() => res(val), ms))
+
+Promise.all([
+  queue.add(() => delay(50, "A")),
+  queue.add(() => delay(30, "B")),
+  queue.add(() => delay(10, "C")),
+  queue.add(() => delay(20, "D")),
+]).then(results => console.log(results.join(",")))
+`,
+      expected: 'A,B,C,D',
+    },
+    {
+      id: 'duel-js-8',
+      title: 'Linked List',
+      description: `Implement a singly linked list with common operations.
+
+1. Create class \`Node\` with \`val\` and \`next = null\`.
+2. Create class \`LinkedList\` with:
+   - \`push(val)\` — append to end
+   - \`pop()\` — remove and return last value
+   - \`reverse()\` — reverse the list in-place
+   - \`toArray()\` — return all values as an array
+3. Run:
+   const list = new LinkedList()
+   list.push(1); list.push(2); list.push(3); list.push(4); list.push(5)
+   console.log(list.pop())
+   list.reverse()
+   console.log(list.toArray())
+
+Expected output:
+5
+[4, 3, 2, 1]`,
+      starterCode: `class Node {
+  constructor(val) {
+    this.val = val
+    this.next = null
+  }
+}
+
+class LinkedList {
+  constructor() {
+    this.head = null
+  }
+
+  push(val) {
+    // implement
+  }
+
+  pop() {
+    // implement — return the removed value
+  }
+
+  reverse() {
+    // implement in-place
+  }
+
+  toArray() {
+    // implement
+  }
+}
+
+const list = new LinkedList()
+list.push(1); list.push(2); list.push(3); list.push(4); list.push(5)
+console.log(list.pop())
+list.reverse()
+console.log(list.toArray())
+`,
+      expected: '5\n[4, 3, 2, 1]',
+      expectedCheck: (stdout) => stdout.includes('5') && stdout.includes('4, 3, 2, 1'),
+    },
+    {
+      id: 'duel-js-9',
+      title: 'Curry & Compose',
+      description: `Implement function currying and composition from scratch.
+
+1. Write \`curry(fn)\` — returns a curried version of fn. A curried function can be called with partial args and keeps returning functions until all args are satisfied.
+2. Write \`compose(...fns)\` — returns a function that applies fns right-to-left.
+3. Write \`pipe(...fns)\` — same but left-to-right.
+4. Run:
+   const add = curry((a, b, c) => a + b + c)
+   console.log(add(1)(2)(3))
+   console.log(add(1, 2)(3))
+   console.log(add(1)(2, 3))
+
+   const double = x => x * 2
+   const addTen = x => x + 10
+   const square = x => x * x
+
+   const transform = compose(square, addTen, double)
+   console.log(transform(3))  // square(addTen(double(3))) = square(16) = 256
+
+   const pipeline = pipe(double, addTen, square)
+   console.log(pipeline(3))   // square(addTen(double(3))) = same = 256
+
+Expected output:
+6
+6
+6
+256
+256`,
+      starterCode: `function curry(fn) {
+  // implement
+}
+
+function compose(...fns) {
+  // implement — right to left
+}
+
+function pipe(...fns) {
+  // implement — left to right
+}
+
+const add = curry((a, b, c) => a + b + c)
+console.log(add(1)(2)(3))
+console.log(add(1, 2)(3))
+console.log(add(1)(2, 3))
+
+const double = x => x * 2
+const addTen = x => x + 10
+const square = x => x * x
+
+const transform = compose(square, addTen, double)
+console.log(transform(3))
+
+const pipeline = pipe(double, addTen, square)
+console.log(pipeline(3))
+`,
+      expected: '6\n6\n6\n256\n256',
+    },
+    {
+      id: 'duel-js-10',
+      title: 'Reactive Store',
+      description: `Build a mini reactive state store (like a simplified Redux/Zustand).
+
+1. Write \`createStore(reducer, initialState)\` that returns a store with:
+   - \`getState()\` — returns current state
+   - \`dispatch(action)\` — calls reducer(currentState, action) and updates state
+   - \`subscribe(listener)\` — registers a callback called on every state change, returns an unsubscribe function
+2. Reducer handles actions: \`{ type: "ADD", payload }\`, \`{ type: "REMOVE", payload }\`, \`{ type: "CLEAR" }\` on a \`{ items: [] }\` state.
+3. Run:
+   const store = createStore(reducer, { items: [] })
+   const unsub = store.subscribe(() => console.log(store.getState().items.length))
+   store.dispatch({ type: "ADD", payload: "sword" })
+   store.dispatch({ type: "ADD", payload: "shield" })
+   store.dispatch({ type: "REMOVE", payload: "sword" })
+   unsub()
+   store.dispatch({ type: "ADD", payload: "potion" })  // subscriber gone, no log
+   console.log(store.getState().items)
+
+Expected output:
+1
+2
+1
+['shield', 'potion']`,
+      starterCode: `function createStore(reducer, initialState) {
+  // implement
+}
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "ADD":    return { ...state, items: [...state.items, action.payload] }
+    case "REMOVE": return { ...state, items: state.items.filter(i => i !== action.payload) }
+    case "CLEAR":  return { ...state, items: [] }
+    default:       return state
+  }
+}
+
+const store = createStore(reducer, { items: [] })
+const unsub = store.subscribe(() => console.log(store.getState().items.length))
+store.dispatch({ type: "ADD", payload: "sword" })
+store.dispatch({ type: "ADD", payload: "shield" })
+store.dispatch({ type: "REMOVE", payload: "sword" })
+unsub()
+store.dispatch({ type: "ADD", payload: "potion" })
+console.log(JSON.stringify(store.getState().items))
+`,
+      expected: "1\n2\n1\n[\"shield\",\"potion\"]",
     },
   ],
 }
@@ -360,10 +991,15 @@ function send(ws, payload) {
   }
 }
 
-// ── Helper: pick a random problem for a language ──────────
+// ── Helper: pick next problem using round-robin per language ─
+// Tracks last-used index per language so users rotate through
+// all problems before seeing a repeat
+const problemIndex = {}
 function pickProblem(language) {
   const pool = DUEL_PROBLEMS[language] ?? DUEL_PROBLEMS.python
-  return pool[Math.floor(Math.random() * pool.length)]
+  const idx = problemIndex[language] ?? 0
+  problemIndex[language] = (idx + 1) % pool.length
+  return pool[idx]
 }
 
 // ── Helper: start a duel between two players ──────────────
@@ -417,9 +1053,8 @@ function startBotDuel(player, language) {
 
   send(player.ws, { type: 'duel_start', duelId, problem, opponentName: botName })
 
-  // Bot submits the correct answer after a random delay (5–10 minutes)
-  // giving the human a real chance to solve the harder problems
-  const botDelay = 300000 + Math.random() * 300000
+  // Bot submits after 15–20 minutes — LeetCode-style time pressure
+  const botDelay = 900000 + Math.random() * 300000
   setTimeout(async () => {
     const duel = activeduels.get(duelId)
     if (!duel || duel.resolved) return
