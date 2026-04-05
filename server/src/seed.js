@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 // ─────────────────────────────────────────────────────────────
@@ -4479,73 +4478,17 @@ async function seed() {
     console.log(`  ✓ Achievement: ${ach.title}`)
   }
 
-  // Demo users — give the leaderboard some life across all languages
-  const demoUsers = [
-    { username: 'AriaStorm - bot',   email: 'aria@demo.cq',    avatar: '🧙', heroClass: 'Mage',    completedLessons: { python: 20, javascript: 15, typescript: 10, sql: 8,  go: 5,  rust: 3  } },
-    { username: 'BoltRunner - bot',  email: 'bolt@demo.cq',    avatar: '⚔️', heroClass: 'Warrior', completedLessons: { python: 10, javascript: 25, typescript: 5,  sql: 3,  go: 12, rust: 0  } },
-    { username: 'CaraWitch - bot',   email: 'cara@demo.cq',    avatar: '🔮', heroClass: 'Mage',    completedLessons: { python: 5,  javascript: 8,  typescript: 20, sql: 15, go: 3,  rust: 8  } },
-    { username: 'DrakeForge - bot',  email: 'drake@demo.cq',   avatar: '🛡', heroClass: 'Paladin', completedLessons: { python: 15, javascript: 10, typescript: 8,  sql: 20, go: 8,  rust: 15 } },
-    { username: 'EvePixel - bot',    email: 'eve@demo.cq',     avatar: '🏹', heroClass: 'Ranger',  completedLessons: { python: 8,  javascript: 20, typescript: 15, sql: 5,  go: 20, rust: 5  } },
-    { username: 'FinnCipher - bot',  email: 'finn@demo.cq',    avatar: '🗡', heroClass: 'Rogue',   completedLessons: { python: 25, javascript: 5,  typescript: 3,  sql: 10, go: 6,  rust: 20 } },
-    { username: 'GraceLoop - bot',   email: 'grace@demo.cq',   avatar: '✨', heroClass: 'Mage',    completedLessons: { python: 12, javascript: 18, typescript: 22, sql: 6,  go: 4,  rust: 10 } },
-    { username: 'HectorByte - bot',  email: 'hector@demo.cq',  avatar: '⚙', heroClass: 'Warrior', completedLessons: { python: 6,  javascript: 12, typescript: 7,  sql: 18, go: 15, rust: 25 } },
-    { username: 'IvyScript - bot',   email: 'ivy@demo.cq',     avatar: '🌿', heroClass: 'Ranger',  completedLessons: { python: 18, javascript: 22, typescript: 12, sql: 4,  go: 9,  rust: 6  } },
-    { username: 'JaxRuntime - bot',  email: 'jax@demo.cq',     avatar: '🔥', heroClass: 'Rogue',   completedLessons: { python: 3,  javascript: 28, typescript: 18, sql: 12, go: 22, rust: 12 } },
+  // Remove any previously seeded demo users
+  const demoEmails = [
+    'aria@demo.cq', 'bolt@demo.cq', 'cara@demo.cq', 'drake@demo.cq', 'eve@demo.cq',
+    'finn@demo.cq', 'grace@demo.cq', 'hector@demo.cq', 'ivy@demo.cq', 'jax@demo.cq',
   ]
-
-  const hashedPassword = await bcrypt.hash('demo1234', 10)
-
-  for (const demo of demoUsers) {
-    // Calculate total XP and level from completed lessons
-    let totalXP = 0
-    const progressRecords = []
-
-    for (const [region, count] of Object.entries(demo.completedLessons)) {
-      const regionLessons = ALL_LESSONS
-        .filter(l => l.regionId === region)
-        .sort((a, b) => a.order - b.order)
-        .slice(0, count)
-
-      for (const lesson of regionLessons) {
-        totalXP += lesson.xpReward
-        progressRecords.push({ lessonId: lesson.id, regionId: region, xpEarned: lesson.xpReward })
-      }
-    }
-
-    // Calculate level from XP
-    let level = 1
-    let xpNeeded = 100
-    let remaining = totalXP
-    while (remaining >= xpNeeded) { remaining -= xpNeeded; level++; xpNeeded = level * 100 }
-
-    const points = Math.floor(totalXP / 5)
-
-    // Upsert the user
-    const user = await prisma.user.upsert({
-      where: { email: demo.email },
-      update: { xp: totalXP, level, points },
-      create: {
-        username: demo.username,
-        email: demo.email,
-        password: hashedPassword,
-        avatar: demo.avatar,
-        heroClass: demo.heroClass,
-        xp: totalXP,
-        level,
-        points,
-      }
-    })
-
-    // Upsert progress records
-    for (const p of progressRecords) {
-      await prisma.progress.upsert({
-        where: { userId_lessonId: { userId: user.id, lessonId: p.lessonId } },
-        update: {},
-        create: { userId: user.id, lessonId: p.lessonId, regionId: p.regionId, xpEarned: p.xpEarned }
-      })
-    }
-
-    console.log(`  ✓ Demo user: ${demo.username} (${totalXP} XP, level ${level})`)
+  const demoUsers = await prisma.user.findMany({ where: { email: { in: demoEmails } }, select: { id: true } })
+  const demoIds = demoUsers.map(u => u.id)
+  if (demoIds.length > 0) {
+    await prisma.progress.deleteMany({ where: { userId: { in: demoIds } } })
+    await prisma.user.deleteMany({ where: { id: { in: demoIds } } })
+    console.log(`  ✓ Removed ${demoIds.length} demo users`)
   }
 
   console.log(`\n✅ Seed complete! ${ALL_LESSONS.length} lessons across 6 languages.`)
