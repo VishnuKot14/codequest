@@ -4481,16 +4481,16 @@ async function seed() {
 
   // Demo users — give the leaderboard some life across all languages
   const demoUsers = [
-    { username: 'AriaStorm',   email: 'aria@demo.cq',    avatar: '🧙', heroClass: 'Mage',    completedLessons: { python: 20, javascript: 15, typescript: 10, sql: 8,  go: 5,  rust: 3  } },
-    { username: 'BoltRunner',  email: 'bolt@demo.cq',    avatar: '⚔️', heroClass: 'Warrior', completedLessons: { python: 10, javascript: 25, typescript: 5,  sql: 3,  go: 12, rust: 0  } },
-    { username: 'CaraWitch',   email: 'cara@demo.cq',    avatar: '🔮', heroClass: 'Mage',    completedLessons: { python: 5,  javascript: 8,  typescript: 20, sql: 15, go: 3,  rust: 8  } },
-    { username: 'DrakeForge',  email: 'drake@demo.cq',   avatar: '🛡', heroClass: 'Paladin', completedLessons: { python: 15, javascript: 10, typescript: 8,  sql: 20, go: 8,  rust: 15 } },
-    { username: 'EvePixel',    email: 'eve@demo.cq',     avatar: '🏹', heroClass: 'Ranger',  completedLessons: { python: 8,  javascript: 20, typescript: 15, sql: 5,  go: 20, rust: 5  } },
-    { username: 'FinnCipher',  email: 'finn@demo.cq',    avatar: '🗡', heroClass: 'Rogue',   completedLessons: { python: 25, javascript: 5,  typescript: 3,  sql: 10, go: 6,  rust: 20 } },
-    { username: 'GraceLoop',   email: 'grace@demo.cq',   avatar: '✨', heroClass: 'Mage',    completedLessons: { python: 12, javascript: 18, typescript: 22, sql: 6,  go: 4,  rust: 10 } },
-    { username: 'HectorByte',  email: 'hector@demo.cq',  avatar: '⚙', heroClass: 'Warrior', completedLessons: { python: 6,  javascript: 12, typescript: 7,  sql: 18, go: 15, rust: 25 } },
-    { username: 'IvyScript',   email: 'ivy@demo.cq',     avatar: '🌿', heroClass: 'Ranger',  completedLessons: { python: 18, javascript: 22, typescript: 12, sql: 4,  go: 9,  rust: 6  } },
-    { username: 'JaxRuntime',  email: 'jax@demo.cq',     avatar: '🔥', heroClass: 'Rogue',   completedLessons: { python: 3,  javascript: 28, typescript: 18, sql: 12, go: 22, rust: 12 } },
+    { username: 'AriaStorm - bot',   email: 'aria@demo.cq',    avatar: '🧙', heroClass: 'Mage',    completedLessons: { python: 20, javascript: 15, typescript: 10, sql: 8,  go: 5,  rust: 3  } },
+    { username: 'BoltRunner - bot',  email: 'bolt@demo.cq',    avatar: '⚔️', heroClass: 'Warrior', completedLessons: { python: 10, javascript: 25, typescript: 5,  sql: 3,  go: 12, rust: 0  } },
+    { username: 'CaraWitch - bot',   email: 'cara@demo.cq',    avatar: '🔮', heroClass: 'Mage',    completedLessons: { python: 5,  javascript: 8,  typescript: 20, sql: 15, go: 3,  rust: 8  } },
+    { username: 'DrakeForge - bot',  email: 'drake@demo.cq',   avatar: '🛡', heroClass: 'Paladin', completedLessons: { python: 15, javascript: 10, typescript: 8,  sql: 20, go: 8,  rust: 15 } },
+    { username: 'EvePixel - bot',    email: 'eve@demo.cq',     avatar: '🏹', heroClass: 'Ranger',  completedLessons: { python: 8,  javascript: 20, typescript: 15, sql: 5,  go: 20, rust: 5  } },
+    { username: 'FinnCipher - bot',  email: 'finn@demo.cq',    avatar: '🗡', heroClass: 'Rogue',   completedLessons: { python: 25, javascript: 5,  typescript: 3,  sql: 10, go: 6,  rust: 20 } },
+    { username: 'GraceLoop - bot',   email: 'grace@demo.cq',   avatar: '✨', heroClass: 'Mage',    completedLessons: { python: 12, javascript: 18, typescript: 22, sql: 6,  go: 4,  rust: 10 } },
+    { username: 'HectorByte - bot',  email: 'hector@demo.cq',  avatar: '⚙', heroClass: 'Warrior', completedLessons: { python: 6,  javascript: 12, typescript: 7,  sql: 18, go: 15, rust: 25 } },
+    { username: 'IvyScript - bot',   email: 'ivy@demo.cq',     avatar: '🌿', heroClass: 'Ranger',  completedLessons: { python: 18, javascript: 22, typescript: 12, sql: 4,  go: 9,  rust: 6  } },
+    { username: 'JaxRuntime - bot',  email: 'jax@demo.cq',     avatar: '🔥', heroClass: 'Rogue',   completedLessons: { python: 3,  javascript: 28, typescript: 18, sql: 12, go: 22, rust: 12 } },
   ]
 
   const hashedPassword = await bcrypt.hash('demo1234', 10)
