@@ -27,7 +27,7 @@ export default function LeaderboardPage() {
     const fetch = async () => {
       setLoading(true)
       try {
-        const params = activeTab === 'Global' ? '' : `?language=${activeTab}`
+        const params = activeTab === 'Global' ? '' : `?language=${activeTab.toLowerCase()}`
         const res = await api.get(`/leaderboard${params}`)
         setEntries(res.data.entries)
         setUserRank(res.data.userRank)
