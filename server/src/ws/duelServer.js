@@ -1053,8 +1053,8 @@ function startBotDuel(player, language) {
 
   send(player.ws, { type: 'duel_start', duelId, problem, opponentName: botName })
 
-  // Bot submits after 15–20 minutes — LeetCode-style time pressure
-  const botDelay = 900000 + Math.random() * 300000
+  // Bot submits after 30–35 minutes — gives player a full interview-style window
+  const botDelay = 1800000 + Math.random() * 300000
   setTimeout(async () => {
     const duel = activeduels.get(duelId)
     if (!duel || duel.resolved) return
