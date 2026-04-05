@@ -123,25 +123,27 @@ router.post('/', requireAuth, async (req, res) => {
     await writeFile(filepath, code, 'utf-8')
     const { command, cleanup } = strategy(filepath)
 
-    let rawOutput
+    let stdoutOnly = ''
+    let displayOutput
     try {
       const { stdout, stderr } = await runCommand(command)
+      stdoutOnly = stdout.trim()
       // Combine stdout + stderr so users see compiler errors in the output panel
-      rawOutput = stdout + (stderr ? `\n[stderr]:\n${stderr}` : '')
+      displayOutput = stdout + (stderr ? `\n[stderr]:\n${stderr}` : '')
     } catch (execErr) {
       // Execution itself failed (timeout, crash, compile error)
-      rawOutput = execErr.message
+      displayOutput = execErr.message
     } finally {
       // Always clean up the source file and any compiled artifacts
       await cleanupFiles([filepath, ...cleanup])
     }
 
-    const output = rawOutput.trim()
+    const output = (displayOutput ?? '').trim()
 
-    // Run tests: check if the expected string appears anywhere in output
+    // Run tests: check expected string against stdout only (not stderr/file paths)
     const testResults = tests.map((test) => ({
       description: test.description,
-      passed: output.includes(test.expected),
+      passed: stdoutOnly.includes(test.expected),
     }))
 
     const allPassed = testResults.length > 0 && testResults.every((t) => t.passed)
