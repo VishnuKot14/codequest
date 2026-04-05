@@ -33,6 +33,7 @@ export default function DuelPage() {
     result,
     submitResult,
     opponentSubmitted,
+    queueMessage,
     connect,
     submit,
     forfeit,
@@ -105,7 +106,7 @@ export default function DuelPage() {
         <div className="text-center">
           <div className="text-6xl mb-6 animate-bounce">⚔</div>
           <h2 className="font-quest text-2xl font-bold text-white mb-3">Searching for Opponent</h2>
-          <p className="text-white/40 mb-8">Waiting for another {selectedLang} warrior...</p>
+          <p className="text-white/40 mb-8">{queueMessage}</p>
 
           {/* Pulsing rings — pure CSS animation to show activity */}
           <div className="relative w-24 h-24 mx-auto mb-8">

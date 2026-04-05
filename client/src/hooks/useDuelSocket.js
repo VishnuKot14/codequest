@@ -19,6 +19,7 @@ export function useDuelSocket(language) {
   const [result, setResult] = useState(null)          // { winner, youWon, forfeit, disconnect }
   const [submitResult, setSubmitResult] = useState(null) // { passed, stdout } on wrong attempt
   const [opponentSubmitted, setOpponentSubmitted] = useState(false)
+  const [queueMessage, setQueueMessage] = useState('Searching for an opponent...')
 
   // useRef stores the WebSocket instance without causing re-renders when it changes.
   // If we used useState, every time the socket connected/disconnected the component would re-render.
@@ -48,6 +49,7 @@ export function useDuelSocket(language) {
 
       if (msg.type === 'queued') {
         setStatus('queued')
+        setQueueMessage(msg.message || 'Searching for an opponent...')
       }
 
       if (msg.type === 'duel_start') {
@@ -70,6 +72,10 @@ export function useDuelSocket(language) {
       if (msg.type === 'duel_result') {
         setResult(msg)
         setStatus('finished')
+      }
+
+      if (msg.type === 'queue_cancelled') {
+        setStatus('idle')
       }
 
       if (msg.type === 'error') {
@@ -106,5 +112,5 @@ export function useDuelSocket(language) {
     }
   }, [])
 
-  return { status, problem, opponentName, result, submitResult, opponentSubmitted, connect, submit, forfeit }
+  return { status, problem, opponentName, result, submitResult, opponentSubmitted, queueMessage, connect, submit, forfeit }
 }

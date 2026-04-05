@@ -29,11 +29,16 @@ const JWT_SECRET = process.env.JWT_SECRET || 'codequest-dev-secret-change-in-pro
 
 // ── In-memory state ───────────────────────────────────────
 // Queue: players waiting for an opponent, keyed by language
-// Map<language, { ws, userId, username }>
+// Map<language, { ws, userId, username, timeoutId, botTimeoutId }>
 const queue = new Map()
 
 // Active duels: Map<duelId, { playerA, playerB, problem, startTime, resolved }>
 const activeduels = new Map()
+
+// How long to wait for a real opponent before sending a bot (ms)
+const BOT_DELAY = 15000
+// How long before cancelling the queue entirely if even the bot fails (ms)
+const QUEUE_TIMEOUT = 30000
 
 // ── Duel problems ─────────────────────────────────────────
 // A small pool of problems used in duels. In production these come from the DB.
@@ -110,6 +115,71 @@ function pickProblem(language) {
   return pool[Math.floor(Math.random() * pool.length)]
 }
 
+// ── Helper: start a duel between two players ──────────────
+function startDuel(playerA, playerB, language) {
+  const problem = pickProblem(language)
+  const duelId = `duel_${Date.now()}`
+
+  activeduels.set(duelId, {
+    playerA: { ...playerA, solved: false },
+    playerB: { ...playerB, solved: false },
+    problem,
+    language,
+    startTime: Date.now(),
+    resolved: false,
+  })
+
+  playerA.duelId = duelId
+  playerB.duelId = duelId
+
+  send(playerA.ws, { type: 'duel_start', duelId, problem, opponentName: playerB.username })
+  send(playerB.ws, { type: 'duel_start', duelId, problem, opponentName: playerA.username })
+
+  return { duelId, problem }
+}
+
+// ── Helper: start a bot duel for a queued player ──────────
+function startBotDuel(player, language) {
+  // Clear their queue timers
+  clearTimeout(player.botTimeoutId)
+  clearTimeout(player.timeoutId)
+  queue.delete(language)
+
+  const problem = pickProblem(language)
+  const duelId = `duel_${Date.now()}`
+  const botName = ['CodeBot', 'GlitchBot', 'NullBot', 'ByteBot'][Math.floor(Math.random() * 4)]
+
+  // Bot is a fake player — it has no real ws, we handle it server-side
+  const botPlayer = { userId: 'bot', username: botName, duelId, solved: false, isBot: true }
+
+  activeduels.set(duelId, {
+    playerA: { ...player, solved: false },
+    playerB: botPlayer,
+    problem,
+    language,
+    startTime: Date.now(),
+    resolved: false,
+    isBot: true,
+  })
+
+  player.duelId = duelId
+
+  send(player.ws, { type: 'duel_start', duelId, problem, opponentName: botName })
+
+  // Bot submits the correct answer after a random delay (8–20 seconds)
+  // giving the human a real chance to win
+  const botDelay = 8000 + Math.random() * 12000
+  setTimeout(async () => {
+    const duel = activeduels.get(duelId)
+    if (!duel || duel.resolved) return
+
+    duel.resolved = true
+    // Bot wins — tell the human
+    send(player.ws, { type: 'duel_result', winner: botName, youWon: false, stdout: '' })
+    activeduels.delete(duelId)
+  }, botDelay)
+}
+
 // ── Main: attach WebSocket server to existing HTTP server ──
 export function attachDuelServer(httpServer) {
   // We attach to the same port as Express but at path /ws/duel
@@ -144,43 +214,38 @@ export function attachDuelServer(httpServer) {
         const lang = msg.language || 'python'
         player.language = lang
 
-        // Is there already someone waiting for this language?
+        // Is there already a real player waiting for this language?
         const waiting = queue.get(lang)
 
         if (waiting && waiting.userId !== player.userId) {
-          // Match found! Start a duel immediately
+          // Real opponent found — cancel their timers and start immediately
+          clearTimeout(waiting.botTimeoutId)
+          clearTimeout(waiting.timeoutId)
           queue.delete(lang)
-
-          const problem = pickProblem(lang)
-          const duelId = `duel_${Date.now()}`
-
-          // Store the active duel in memory
-          activeduels.set(duelId, {
-            playerA: { ...waiting, solved: false },
-            playerB: { ...player, solved: false },
-            problem,
-            language: lang,
-            startTime: Date.now(),
-            resolved: false,
-          })
-
-          player.duelId = duelId
-          waiting.duelId = duelId
-
-          // Tell both players the duel has started
-          const duelStart = {
-            type: 'duel_start',
-            duelId,
-            problem,
-            opponentName: '',
-          }
-          send(waiting.ws, { ...duelStart, opponentName: player.username })
-          send(player.ws,  { ...duelStart, opponentName: waiting.username })
+          startDuel(waiting, player, lang)
 
         } else {
-          // No opponent yet — add to queue
+          // No opponent yet — add to queue and set two timers:
+          // 1. After BOT_DELAY: match against a bot so they're not waiting forever
+          // 2. After QUEUE_TIMEOUT: give up entirely (shouldn't normally fire since bot fires first)
           queue.set(lang, player)
           send(ws, { type: 'queued', message: `Waiting for an opponent in ${lang}...` })
+
+          player.botTimeoutId = setTimeout(() => {
+            // Only fire if still in queue (not matched with a real player yet)
+            if (queue.get(lang)?.userId === player.userId) {
+              send(ws, { type: 'queued', message: 'No players found — matched with a bot!' })
+              startBotDuel(player, lang)
+            }
+          }, BOT_DELAY)
+
+          player.timeoutId = setTimeout(() => {
+            if (queue.get(lang)?.userId === player.userId) {
+              queue.delete(lang)
+              clearTimeout(player.botTimeoutId)
+              send(ws, { type: 'queue_cancelled', message: 'No opponents found. Try again later!' })
+            }
+          }, QUEUE_TIMEOUT)
         }
       }
 
@@ -256,10 +321,14 @@ export function attachDuelServer(httpServer) {
     // ── Clean up on disconnect ──────────────────────────────
     ws.on('close', () => {
       console.log(`⚔ Duel socket disconnected: ${player?.username}`)
-      // Remove from queue if they were waiting
+      // Remove from queue if they were waiting and cancel any pending timers
       if (player?.language) {
         const waiting = queue.get(player.language)
-        if (waiting?.userId === player.userId) queue.delete(player.language)
+        if (waiting?.userId === player.userId) {
+          queue.delete(player.language)
+          clearTimeout(player.botTimeoutId)
+          clearTimeout(player.timeoutId)
+        }
       }
       // If they were in a duel, the opponent wins by default
       if (player?.duelId) {
